@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+const Articles = require('./../models/articles');
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -20,7 +22,7 @@ router.get('/', (req, res) => {
             let author = $(element).find('span').text().replace('Image', '');
             let articleUrl = $(element).find('a').attr('href');
             let imageUrl = $(element).find('img').attr('src');
-            //console.log(element);
+
             let article = {
                 title: title,
                 summary: summary,
@@ -28,6 +30,8 @@ router.get('/', (req, res) => {
                 articleUrl: articleUrl,
                 imageUrl: imageUrl
             }
+            
+            Articles.saveArticle(article);
             articles.push(article);
         });
         hbs.articles = articles;

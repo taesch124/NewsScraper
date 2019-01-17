@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const handlebars = require('express-handlebars');
 const path = require('path');
@@ -6,6 +7,10 @@ const articleController = require('./app/controllers/articleController');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/NewsScraper";
+
+mongoose.connect(MONGODB_URI);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
