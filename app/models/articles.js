@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
-const articleSchema = new Schema({
-    title: String,
+const ArticleSchema = new Schema({
+    title: {
+        type: String,
+        unique: true
+    },
     imageUrl: String,
     author: String,
     summary: String,
@@ -11,10 +14,8 @@ const articleSchema = new Schema({
     saved: Boolean
 });
 
-const Article = mongoose.model('Article', articleSchema);
-
-function saveArticle(data, callback) {
-    Article.find({title: data.title}, (err, results) => {
+ArticleSchema.methods.saveArticle = function (callback) {
+    Article.find({title: this.title}, (err, results) => {
         if(err) throw err;
 
         if(results.length > 0) {
@@ -22,23 +23,20 @@ function saveArticle(data, callback) {
             return;
         } 
 
-        Article.create(data, (err, small) => {
+        Article.create(this, (err, small) => {
             if(err) throw err;
-            console.log('saved');
             if (typeof callback === 'function') callback(small);
         });
     });
     
 }
 
-function findTen(where, callback) {
+ArticleSchema.statics.findTen = function(where, callback) {
     Article.find(where).limit(10).exec((err, results) => {
         if (err) throw err;
         if(typeof callback === 'function') callback(results);
     });
 }
 
-module.exports = {
-    saveArticle: saveArticle,
-    findTen: findTen
-}
+const Article = mongoose.model('Article', ArticleSchema);
+module.exports = Article;

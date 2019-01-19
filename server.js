@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 8080;
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/NewsScraper";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
