@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const Articles = require('./../models/articles');
+const Article = require('./../models/articles');
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/scrapeArticles', (req, res) => {
             let imageUrl = $(element).find('img').attr('src');
             let saved = false;
 
-            let article = {
+            let obj = {
                 title: title,
                 summary: summary,
                 author: author,
@@ -37,11 +37,12 @@ router.get('/scrapeArticles', (req, res) => {
                 imageUrl: imageUrl,
                 saved: saved
             }
+            let article = new Article(obj);
             
-            Articles.saveArticle(article, (small) => {
+            article.saveArticle( (small) => {
                 articlesSaved++;
                 if(articlesSaved === articleCount) {
-                    Articles.findTen({}, (results) => {
+                    Article.findTen({}, (results) => {
                         hbs.articles = results;
                         hbs.layout = false;
                         //console.log(hbs.ar)
