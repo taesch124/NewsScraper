@@ -1,3 +1,5 @@
+<a class="btn btn-rpimary waves-effect blue" id="scrape">Scrape</a>
+{{#if articles}}
 {{#each articles}}
 <div class="card">
     <div class="row">
@@ -7,10 +9,36 @@
         <div class="col s8">
             <h3>{{title}}</h3>
             <p>{{summary}}</p>
-            <a href="https://www.nytimes.com{{articleUrl}}" target="_blank">View article</a>
+            <a href="{{articleUrl}}" target="_blank">View article</a>
             <h3>{{author}}</h3>
         </div>
     </div>
 
 </div>
 {{/each}}
+
+{{!-- {{else}}
+<div class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-blue-only">
+        <div class="circle-clipper left">
+        <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+        </div><div class="circle-clipper right">
+        <div class="circle"></div>
+        </div>
+    </div>
+</div> --}}
+{{/if}}
+
+<script>
+    $('#scrape').on('click', function() {
+        console.log('scraping');
+        $.get('/articles/scrapeArticles')
+        .then(data => {
+            $('#content-container').empty();
+            $('#content-container').append(data);
+        });
+    });
+    
+</script>

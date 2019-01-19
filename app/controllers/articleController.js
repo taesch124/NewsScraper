@@ -7,35 +7,50 @@ const Articles = require('./../models/articles');
 const router = express.Router();
 
 router.get('/', (req, res) => {
+    res.render('articles', {});
+})
+
+router.get('/scrapeArticles', (req, res) => {
     
     axios.get('https://www.nytimes.com/section/technology')
     .then(response => {
-        console.log('Fetching articles');
         let hbs = {};
-        let articles = [];
         const $ = cheerio.load(response.data);
         //console.log($);
         let newsStream = $('section#stream-panel ol li');
+        let articleCount = newsStream.length;
+        let articlesSaved = 0;
+
         $(newsStream).each((i, element) => {
             let title = $(element).find('h2').text();
             let summary = $(element).find('p').text();
             let author = $(element).find('span').text().replace('Image', '');
-            let articleUrl = $(element).find('a').attr('href');
+            let articleUrl = 'https://www.nytimes.com' + $(element).find('a').attr('href');
             let imageUrl = $(element).find('img').attr('src');
+            let saved = false;
 
             let article = {
                 title: title,
                 summary: summary,
                 author: author,
                 articleUrl: articleUrl,
-                imageUrl: imageUrl
+                imageUrl: imageUrl,
+                saved: saved
             }
             
-            Articles.saveArticle(article);
-            articles.push(article);
+            Articles.saveArticle(article, (small) => {
+                articlesSaved++;
+                if(articlesSaved === articleCount) {
+                    Articles.findTen({}, (results) => {
+                        hbs.articles = results;
+                        hbs.layout = false;
+                        //console.log(hbs.ar)
+                        res.render('articles', hbs);
+                    });
+                }
+            });
         });
-        hbs.articles = articles;
-        res.render('articles', hbs);
+        
     });
     
 });
