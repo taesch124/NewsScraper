@@ -10,14 +10,32 @@
     <link href="/assets/styles/main.css" rel="stylesheet" type="text/css">
 
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </head>
 <body>
+
+    <div id="app-modal" class="modal ">
+        <div class="app-modal-content">
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
 
     <div class="container">
         <div class="card">
             <div class="row">
                 <div class="col s12">
-                    <h1 class="card-panel center-align blue-grey lighten-2">News Scraper</h1>
+                    <nav class="blue-grey lighten-2">
+                        <div class="nav-wrapper">
+                            <a class="brand-logo right">News Scraper</a>
+                            <ul class="left">
+                                <li class="scrape" id="scrape"><a>Scrape</a></li>
+                                <li id="saved-articles"><a>Saved Articles</a></li>
+                                <li id="clear-saved-articles"><a>Clear Saved Articles</a></li>
+                            </ul>
+                        </div>
+                    </nav>
                 </div>
             </div>
             <div class="row">
@@ -28,6 +46,7 @@
         </div>
     </div>
     
-    <script src="/assets/scripts/articles.js"></script>
+    <script src="/assets/scripts/navigation.js"></script>
+    
 </body>
 </html>

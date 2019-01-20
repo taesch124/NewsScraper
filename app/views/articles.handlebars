@@ -1,17 +1,17 @@
-<a class="btn btn-primary waves-effect blue scrape" id="scrape">Scrape</a>
-
 {{#if articles}}
     {{#each articles}}
     <div class="card">
         <div class="row">
             <div class="col s4 flex-vertical">
                 <img src="{{imageUrl}}">
-                {{#unless favorite}}
+                {{#if saved}}
+                <a class="btn btn-primary red" data-article-id="{{_id}}">Saved</a>
+                {{else}}
                 <a class="btn btn-primary waves-effect green save-article" data-article-id="{{_id}}">Save Article</a>
-                {{/unless}}
+                {{/if}}
             </div>
             <div class="col s8">
-                <h3>{{title}}</h3>
+                <h4>{{title}}</h4>
                 <p>{{summary}}</p>
                 <h5>By: {{author}}</h5>
                 <a href="{{articleUrl}}" target="_blank">View article</a>
@@ -20,4 +20,9 @@
 
     </div>
     {{/each}}
+{{else}}
+<script src="/assets/scripts/articles.js"></script>
 {{/if}}
+
+
+<script src="/assets/scripts/saveArticle.js"></script>

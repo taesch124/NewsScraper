@@ -1,0 +1,25 @@
+{{#if notes}}
+    {{#each notes}}
+    <div class="card">
+        <div class="row flex-row">
+            <div class="col s10">
+                <p class="note-text">{{message}}</p>
+                
+            </div>
+            <div class="col s2 flex-vertical">
+
+                    <i class="flex-vertical-child material-icons waves-effect delete-note" data-note-id="{{_id}}">delete</i>
+
+            </div>
+        </div>
+    </div>
+    {{/each}}
+{{else}}
+
+<div class="row">
+    <div class="col s12 center-align">
+        <h4>No notes for this article</h4>
+    </div>
+</div>
+
+{{/if}}

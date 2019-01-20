@@ -11,7 +11,13 @@ const ArticleSchema = new Schema({
     author: String,
     summary: String,
     articleUrl: String,
-    saved: Boolean
+    saved: Boolean,
+    notes: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Note"
+        }
+    ]
 });
 
 ArticleSchema.methods.saveArticle = function (callback) {
