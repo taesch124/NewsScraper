@@ -89,7 +89,6 @@ router.put('/clearSaved/:articleId', (req, res) => {
             });
         },
         function(docs, callback) {
-            console.log(docs.notes);
             let noteCount = docs.notes.length;
             let counter = 0;
             docs.notes.forEach(e => {
@@ -116,7 +115,6 @@ router.put('/clearSaved/:articleId', (req, res) => {
     ],
     function(err, response) {
         if(err) {
-            console.error(err);
             res.send(err);
             return;
         }
@@ -149,12 +147,10 @@ router.put('/clearSavedArticles', (req, res) => {
     ],
     function(err, response) {
         if(err) {
-            console.log(err);
             res.send(err);
             return;
         }
 
-        console.log(response);
         res.send(response);
     });
     
@@ -192,7 +188,6 @@ router.put('/clearNotes/:articleId', (req, res) => {
             });
         },
         function(docs, callback) {
-            console.log(docs.notes);
             let noteCount = docs.notes.length;
             let counter = 0;
             docs.notes.forEach(e => {
@@ -219,7 +214,6 @@ router.put('/clearNotes/:articleId', (req, res) => {
     ],
     function(err, response) {
         if(err) {
-            console.error(err);
             res.send(err);
             return;
         }
@@ -250,7 +244,6 @@ router.post('/addNote/:articleId', (req, res) => {
 //Remove a single note from a particular article
 router.delete('/removeNote/:noteId', (req, res) => {
     let noteId = req.params.noteId;
-    console.log(noteId);
     Note.deleteWithReferences(noteId, (results) => {
         res.send(results);
     })

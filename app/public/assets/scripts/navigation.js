@@ -2,8 +2,6 @@ $(document).ready(function() {
     $(document).on('click', '.scrape',  function() {
         let button = $(this);
         button.attr('disabled', 'disabled');
-        console.log('scraping');
-        console.log(window.location.pathname);
         if(window.location.pathname === '/articles') {
             $('#content-container').empty();
             $('#content-container').append(loader);

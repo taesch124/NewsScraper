@@ -11,7 +11,6 @@ $(document).ready(function() {
 function addNote() {
     let button = $(this);
     let articleId = button.data('article-id');
-    console.log('View notes for article ' + articleId);
 
     $.ajax({
         url: '/articles/addNote/' + articleId,
@@ -26,16 +25,13 @@ function addNote() {
 function saveNote() {
     let button = $(this);
     let articleId = button.data('article-id');
-    console.log($('#note-message')[0]);
     let message = $('#note-message').val().trim();
-    console.log(articleId + ": " + message);
 
     $.ajax({
         url: '/articles/addNote/' + articleId,
         type: 'POST',
         data: {message: message}
     }).then(data => {
-        console.log('Note saved');
         $('#article-notes-modal').modal('close');
     });
 }
@@ -43,20 +39,17 @@ function saveNote() {
 function clearNotes() {
     let button = $(this);
     let articleId = button.data('article-id');
-    console.log(articleId);
 
     $.ajax({
         url: '/articles/clearNotes/' + articleId,
         type: 'PUT'
     }).then(data => {
-        console.log(data);
     });
 }
 
 function viewNotes() {
     let button = $(this);
     let articleId = button.data('article-id');
-    console.log('View notes for article ' + articleId);
 
     $.ajax({
         url: '/articles/notes/' + articleId,
