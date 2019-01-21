@@ -29,7 +29,6 @@ $(document).ready(function() {
             type: "PUT",
           }).then(
             function(data) {
-              console.log('cleared');
               window.location.reload();
             }
           );

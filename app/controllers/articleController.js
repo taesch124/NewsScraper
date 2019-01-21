@@ -1,16 +1,19 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const Async = require('async');
 
 const Article = require('./../models/articles');
 const Note = require('./../models/notes');
 
 const router = express.Router();
 
+//render empty page that fires the scrape function when ready
 router.get('/', (req, res) => {
     res.render('articles', {});
 })
 
+//Scraping articles and returning handlebars (without layout) to populate page
 router.get('/scrapeArticles', (req, res) => {
     
     axios.get('https://www.nytimes.com/section/technology')
@@ -63,6 +66,7 @@ router.get('/savedArticles', (req, res) => {
     })
 });
 
+//Save an article
 router.put('/saveArticle/:articleId', (req, res) => {
     let id = req.params.articleId;
     Article.updateOne({"_id": id},{$set: {saved: true}}, (err, saved) => {
@@ -72,16 +76,91 @@ router.put('/saveArticle/:articleId', (req, res) => {
     });
 });
 
-router.put('/clearSavedArticles', (req, res) => {
-    Article.updateMany({}, {$set: {saved: false}})
-    .then(saved => {
-        res.send(saved);
-    })
-    .catch(error => {
-        res.send(error);
+router.put('/clearSaved/:articleId', (req, res) => {
+    let articleId = req.params.articleId;
+    Async.waterfall([
+        function(callback) {
+            Article.findOne({_id: articleId})
+            .then(docs => {
+                callback(null, docs);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        },
+        function(docs, callback) {
+            console.log(docs.notes);
+            let noteCount = docs.notes.length;
+            let counter = 0;
+            docs.notes.forEach(e => {
+                Note.deleteOne({_id: e})
+                .then(removed => {
+                    counter++;
+                    if (counter === noteCount) {
+                        callback(null, 'notes removed');
+                    }
+                }).catch(error => {
+                    callback(error);
+                });
+            });
+        },
+        function(result, callback) {
+            Article.updateOne({_id: articleId}, {$set: {saved: false, notes: []}})
+            .then(updated => {
+                callback(null, updated);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        }
+    ],
+    function(err, response) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+            return;
+        }
+
+        res.send(response);
     });
 });
 
+//Clear all saved articles
+router.put('/clearSavedArticles', (req, res) => {
+    Async.series([
+        function(callback) {
+            Note.deleteMany({})
+            .then(update => {
+                callback(null, update);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        },
+        function(callback) {
+            Article.updateMany({}, {$set: {saved: false, notes: []}})
+            .then(saved => {
+                callback(null, saved);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        }
+    ],
+    function(err, response) {
+        if(err) {
+            console.log(err);
+            res.send(err);
+            return;
+        }
+
+        console.log(response);
+        res.send(response);
+    });
+    
+});
+
+//Get all notes for particular article
 router.get('/notes/:articleId', (req, res) => {
     let id = req.params.articleId;
     Article.findOne({"_id": id})
@@ -94,10 +173,62 @@ router.get('/notes/:articleId', (req, res) => {
     });
 });
 
+//Get the view for adding a new note
 router.get('/addNote/:articleId', (req, res) => {
     res.render('add-note', {layout: false, _id: req.params.articleId});
 });
 
+//Clear all notes from particular article
+router.put('/clearNotes/:articleId', (req, res) => {
+    let articleId = req.params.articleId;
+    Async.waterfall([
+        function(callback) {
+            Article.findOne({_id: articleId})
+            .then(docs => {
+                callback(null, docs);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        },
+        function(docs, callback) {
+            console.log(docs.notes);
+            let noteCount = docs.notes.length;
+            let counter = 0;
+            docs.notes.forEach(e => {
+                Note.deleteOne({_id: e})
+                .then(removed => {
+                    counter++;
+                    if (counter === noteCount) {
+                        callback(null, 'notes removed');
+                    }
+                }).catch(error => {
+                    callback(error);
+                });
+            });
+        },
+        function(result, callback) {
+            Article.updateOne({_id: articleId}, {$set: {notes: []}})
+            .then(updated => {
+                callback(null, updated);
+            })
+            .catch(error => {
+                callback(error);
+            });
+        }
+    ],
+    function(err, response) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+            return;
+        }
+
+        res.send(response);
+    });
+});
+
+//Add note to a particular article
 router.post('/addNote/:articleId', (req, res) => {
     let articleId = req.params.articleId;
     let note = new Note({message: req.body.message});
@@ -116,6 +247,7 @@ router.post('/addNote/:articleId', (req, res) => {
     });
 });
 
+//Remove a single note from a particular article
 router.delete('/removeNote/:noteId', (req, res) => {
     let noteId = req.params.noteId;
     console.log(noteId);
